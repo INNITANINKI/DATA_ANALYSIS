@@ -1,0 +1,789 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{mini\_project}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{pip} \PY{n}{install} \PY{n}{selenium}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Requirement already satisfied: selenium in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (4.18.0)Note: you may need to
+restart the kernel to use updated packages.
+
+Requirement already satisfied: urllib3[socks]<3,>=1.26 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from selenium) (1.26.16)
+Requirement already satisfied: trio\textasciitilde{}=0.17 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from selenium) (0.24.0)
+Requirement already satisfied: trio-websocket\textasciitilde{}=0.9 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from selenium) (0.11.1)
+Requirement already satisfied: certifi>=2021.10.8 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from selenium) (2023.7.22)
+Requirement already satisfied: typing\_extensions>=4.9.0 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from selenium) (4.9.0)
+Requirement already satisfied: attrs>=20.1.0 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from trio\textasciitilde{}=0.17->selenium)
+(22.1.0)
+Requirement already satisfied: sortedcontainers in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from trio\textasciitilde{}=0.17->selenium)
+(2.4.0)
+Requirement already satisfied: idna in c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-
+packages (from trio\textasciitilde{}=0.17->selenium) (3.4)
+Requirement already satisfied: outcome in c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-
+packages (from trio\textasciitilde{}=0.17->selenium) (1.3.0.post0)
+Requirement already satisfied: sniffio>=1.3.0 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from trio\textasciitilde{}=0.17->selenium)
+(1.3.0)
+Requirement already satisfied: cffi>=1.14 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from trio\textasciitilde{}=0.17->selenium)
+(1.15.1)
+Requirement already satisfied: wsproto>=0.14 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from trio-
+websocket\textasciitilde{}=0.9->selenium) (1.2.0)
+Requirement already satisfied: PySocks!=1.5.7,<2.0,>=1.5.6 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from
+urllib3[socks]<3,>=1.26->selenium) (1.7.1)
+Requirement already satisfied: pycparser in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from
+cffi>=1.14->trio\textasciitilde{}=0.17->selenium) (2.21)
+Requirement already satisfied: h11<1,>=0.9.0 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from wsproto>=0.14->trio-
+websocket\textasciitilde{}=0.9->selenium) (0.14.0)
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{pip} \PY{n}{install} \PY{n}{webdriver\PYZus{}manager}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Requirement already satisfied: webdriver\_manager in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (4.0.1)
+Requirement already satisfied: requests in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from webdriver\_manager) (2.31.0)
+Requirement already satisfied: python-dotenv in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from webdriver\_manager) (0.21.0)
+Requirement already satisfied: packaging in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from webdriver\_manager) (23.1)
+Requirement already satisfied: charset-normalizer<4,>=2 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from
+requests->webdriver\_manager) (2.0.4)
+Requirement already satisfied: idna<4,>=2.5 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from
+requests->webdriver\_manager) (3.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from
+requests->webdriver\_manager) (1.26.16)
+Requirement already satisfied: certifi>=2017.4.17 in
+c:\textbackslash{}users\textbackslash{}admin\textbackslash{}anaconda3\textbackslash{}ana\textbackslash{}lib\textbackslash{}site-packages (from
+requests->webdriver\_manager) (2023.7.22)
+Note: you may need to restart the kernel to use updated packages.
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{72}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{from} \PY{n+nn}{selenium} \PY{k+kn}{import} \PY{n}{webdriver}
+\PY{k+kn}{from} \PY{n+nn}{time} \PY{k+kn}{import} \PY{n}{sleep}
+\PY{k+kn}{from} \PY{n+nn}{selenium}\PY{n+nn}{.}\PY{n+nn}{webdriver}\PY{n+nn}{.}\PY{n+nn}{chrome}\PY{n+nn}{.}\PY{n+nn}{options} \PY{k+kn}{import} \PY{n}{Options}
+\PY{k+kn}{from} \PY{n+nn}{webdriver\PYZus{}manager}\PY{n+nn}{.}\PY{n+nn}{chrome} \PY{k+kn}{import} \PY{n}{ChromeDriverManager}
+\PY{k+kn}{from} \PY{n+nn}{selenium}\PY{n+nn}{.}\PY{n+nn}{webdriver}\PY{n+nn}{.}\PY{n+nn}{common}\PY{n+nn}{.}\PY{n+nn}{by} \PY{k+kn}{import} \PY{n}{By}
+\PY{k+kn}{from} \PY{n+nn}{selenium}\PY{n+nn}{.}\PY{n+nn}{webdriver}\PY{n+nn}{.}\PY{n+nn}{common}\PY{n+nn}{.}\PY{n+nn}{keys} \PY{k+kn}{import} \PY{n}{Keys}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}urls are converted in list}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{73}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{url}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}narzo\PYZhy{}n53\PYZhy{}feather\PYZhy{}gold\PYZhy{}64\PYZhy{}gb/p/itm3061a0a591574?pid=MOBGPYGT27JBG88Z\PYZam{}lid=LSTMOBGPYGT27JBG88ZVMDPLH\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+Narzo+N53\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}2\PYZam{}otracker=search\PYZam{}otracker1=search\PYZam{}fm=organic\PYZam{}iid=42520887\PYZhy{}166f\PYZhy{}4820\PYZhy{}95db\PYZhy{}6e27a0f9a167.MOBGPYGT27JBG88Z.SEARCH\PYZam{}ppt=hp\PYZam{}ppn=homepage\PYZam{}ssid=mqxr4n4da80000001708431236936\PYZam{}qH=15a202a414679e26}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}11\PYZhy{}5g\PYZhy{}glory\PYZhy{}gold\PYZhy{}128\PYZhy{}gb/p/itm676fecfaebff9?pid=MOBGS2WF3NYDBZKW\PYZam{}lid=LSTMOBGS2WF3NYDBZKWHVGNQ7\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+11+5g\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}spotlightTagId=BestsellerId\PYZus{}tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}4\PYZam{}otracker=search\PYZam{}otracker1=search\PYZam{}fm=Search\PYZam{}iid=655eecc0\PYZhy{}ad4d\PYZhy{}4489\PYZhy{}bef9\PYZhy{}a6a91310b612.MOBGS2WF3NYDBZKW.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=r7wyoin6io0000001708431335806\PYZam{}qH=515f4dde4c20b2ed}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}c67\PYZhy{}5g\PYZhy{}sunny\PYZhy{}oasis\PYZhy{}128\PYZhy{}gb/p/itm1e65b288f166f?pid=MOBGVVTESKUVZ8DG\PYZam{}lid=LSTMOBGVVTESKUVZ8DGGHM5Y0\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+c67+5g\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}1\PYZam{}otracker=AS\PYZus{}QueryStore\PYZus{}OrganicAutoSuggest\PYZus{}1\PYZus{}11\PYZus{}na\PYZus{}na\PYZus{}ps\PYZam{}otracker1=AS\PYZus{}QueryStore\PYZus{}OrganicAutoSuggest\PYZus{}1\PYZus{}11\PYZus{}na\PYZus{}na\PYZus{}ps\PYZam{}fm=Search\PYZam{}iid=5ebf1ebb\PYZhy{}bac6\PYZhy{}406c\PYZhy{}b829\PYZhy{}61949747cb84.MOBGVVTESKUVZ8DG.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=ujdm0hv85c0000001708431462594\PYZam{}qH=8c4f9b10895dbb99}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}c53\PYZhy{}champion\PYZhy{}gold\PYZhy{}128\PYZhy{}gb/p/itm5df90168ecd05?pid=MOBGTEVGHM9ZPZBB\PYZam{}lid=LSTMOBGTEVGHM9ZPZBBYVV7IY\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+c53\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}spotlightTagId=BestsellerId\PYZus{}tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}5\PYZam{}otracker=search\PYZam{}otracker1=search\PYZam{}fm=Search\PYZam{}iid=4ae8f6b1\PYZhy{}2375\PYZhy{}42dc\PYZhy{}94a5\PYZhy{}9156f8d6a086.MOBGTEVGHM9ZPZBB.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}qH=c9645bdb4b485ca9}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}narzo\PYZhy{}60x\PYZhy{}5g\PYZhy{}nebula\PYZhy{}purple\PYZhy{}128\PYZhy{}gb/p/itm906a3c913a97f?pid=MOBGTNS6C5MAJPMZ\PYZam{}lid=LSTMOBGTNS6C5MAJPMZNTR2CS\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+narzo+60x5g\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}2\PYZam{}otracker=AS\PYZus{}QueryStore\PYZus{}OrganicAutoSuggest\PYZus{}1\PYZus{}12\PYZus{}na\PYZus{}na\PYZus{}ps\PYZam{}otracker1=AS\PYZus{}QueryStore\PYZus{}OrganicAutoSuggest\PYZus{}1\PYZus{}12\PYZus{}na\PYZus{}na\PYZus{}ps\PYZam{}fm=Search\PYZam{}iid=e4105579\PYZhy{}6b18\PYZhy{}4962\PYZhy{}9af0\PYZhy{}af8867738184.MOBGTNS6C5MAJPMZ.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=lrdsis10og0000001708431728250\PYZam{}qH=1c0ae7ea01b0d9db}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}narzo\PYZhy{}n55\PYZhy{}prime\PYZhy{}black\PYZhy{}128\PYZhy{}gb/p/itm599c1b2a46e04?pid=MOBGZZUPPPPUW2MG\PYZam{}lid=LSTMOBGZZUPPPPUW2MGJTPTQS\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+narzo+N55\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}3\PYZam{}otracker=search\PYZam{}otracker1=search\PYZam{}fm=search\PYZhy{}autosuggest\PYZam{}iid=1819a5f3\PYZhy{}0320\PYZhy{}469c\PYZhy{}9b3d\PYZhy{}b2803960f331.MOBGZZUPPPPUW2MG.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=7b31et1vq80000001708431857643\PYZam{}qH=dcf38b5759c58f82}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}narzo\PYZhy{}60\PYZhy{}5g\PYZhy{}cosmic\PYZhy{}black\PYZhy{}128\PYZhy{}gb/p/itmb9662c161eea6?pid=MOBGRHT2RYUE4DBZ\PYZam{}lid=LSTMOBGRHT2RYUE4DBZOCSQFW\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+narzo60+5G\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}6\PYZam{}otracker=search\PYZam{}otracker1=search\PYZam{}fm=Search\PYZam{}iid=58580b53\PYZhy{}c914\PYZhy{}4f4c\PYZhy{}a14d\PYZhy{}99aedf378d92.MOBGRHT2RYUE4DBZ.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=iodeqc5ai80000001708432012170\PYZam{}qH=97eedb1dba8d301c}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}narzo\PYZhy{}50i\PYZhy{}prime\PYZhy{}dark\PYZhy{}blue\PYZhy{}32\PYZhy{}gb/p/itm6676700495f81?pid=MOBGNHMG35GGTNTZ\PYZam{}q=realme+narzo+50i+prime\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}3\PYZam{}otracker=search\PYZam{}otracker1=search\PYZam{}fm=Search\PYZam{}iid=8e89bbaf\PYZhy{}c4db\PYZhy{}474c\PYZhy{}95f1\PYZhy{}b3f284949f41.MOBGNHMG35GGTNTZ.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=och228vhuo0000001708432184041\PYZam{}qH=b7169b095cc977e4}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://www.flipkart.com/realme\PYZhy{}11x\PYZhy{}5g\PYZhy{}midnight\PYZhy{}black\PYZhy{}128\PYZhy{}gb/p/itm07be1a2ff1a1b?pid=MOBGS2WFP7X8263G\PYZam{}lid=LSTMOBGS2WFP7X8263G7TE3WT\PYZam{}marketplace=FLIPKART\PYZam{}q=realme+11x+5g\PYZam{}store=tyy}\PY{l+s+si}{\PYZpc{}2F}\PY{l+s+s2}{4io\PYZam{}srno=s\PYZus{}1\PYZus{}3\PYZam{}otracker=AS\PYZus{}QueryStore\PYZus{}OrganicAutoSuggest\PYZus{}1\PYZus{}10\PYZus{}na\PYZus{}na\PYZus{}ps\PYZam{}otracker1=AS\PYZus{}QueryStore\PYZus{}OrganicAutoSuggest\PYZus{}1\PYZus{}10\PYZus{}na\PYZus{}na\PYZus{}ps\PYZam{}fm=Search\PYZam{}iid=775c75de\PYZhy{}f6ed\PYZhy{}427a\PYZhy{}bb13\PYZhy{}92bc880aaae2.MOBGS2WFP7X8263G.SEARCH\PYZam{}ppt=sp\PYZam{}ppn=sp\PYZam{}ssid=o84e2fu00g0000001708432334222\PYZam{}qH=8918e4d47d206431}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{74}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{t}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+\PY{n}{p}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{75}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{9}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{}define options and set browser capabilities}
+    \PY{n}{options}\PY{o}{=}\PY{n}{webdriver}\PY{o}{.}\PY{n}{ChromeOptions}\PY{p}{(}\PY{p}{)}
+    \PY{n}{options}\PY{o}{.}\PY{n}{add\PYZus{}argument}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}same\PYZhy{}option}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{}create webdriver instance with options}
+    \PY{n}{driver}\PY{o}{=}\PY{n}{webdriver}\PY{o}{.}\PY{n}{Chrome}\PY{p}{(}\PY{n}{options}\PY{o}{=}\PY{n}{options}\PY{p}{)}
+    \PY{n}{driver}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{n}{url}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+    \PY{n}{name1} \PY{o}{=} \PY{n}{driver}\PY{o}{.}\PY{n}{find\PYZus{}element}\PY{p}{(}\PY{n}{By}\PY{o}{.}\PY{n}{XPATH}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.//span[@class=}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{B\PYZus{}NuCI}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{c+c1}{\PYZsh{}\PYZlt{}span class=\PYZdq{}B\PYZus{}NuCI\PYZdq{}\PYZgt{}realme Narzo N53 (Feather Gold, 64 GB)\PYZam{}nbsp;\PYZam{}nbsp;(4 GB RAM)\PYZlt{}/span\PYZgt{}}
+    \PY{n}{name} \PY{o}{=} \PY{n}{name1}\PY{o}{.}\PY{n}{text}
+    \PY{n}{t}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{name}\PY{p}{)}
+    \PY{n}{price1} \PY{o}{=} \PY{n}{driver}\PY{o}{.}\PY{n}{find\PYZus{}element}\PY{p}{(}\PY{n}{By}\PY{o}{.}\PY{n}{XPATH}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.//div[@class=}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{\PYZus{}30jeq3 \PYZus{}16Jk6d}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{c+c1}{\PYZsh{}\PYZlt{}div class=\PYZdq{}\PYZus{}30jeq3 \PYZus{}16Jk6d\PYZdq{}\PYZgt{}₹7,969\PYZlt{}/div\PYZgt{}}
+    \PY{n}{price} \PY{o}{=} \PY{n}{price1}\PY{o}{.}\PY{n}{text}
+    \PY{n}{p}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{price}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{76}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{t}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{p}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+['realme Narzo N53 (Feather Gold, 64 GB)  (4 GB RAM)', 'realme 11 5G (Glory
+Gold, 128 GB)  (8 GB RAM)', 'realme C67 5G (Sunny Oasis, 128 GB)  (4 GB RAM)',
+'realme C53 (Champion Gold, 128 GB)  (6 GB RAM)', 'realme Narzo 60X 5G (Nebula
+Purple, 128 GB)  (6 GB RAM)', 'realme Narzo N55 (Prime Black, 128 GB)  (6 GB
+RAM)', 'realme Narzo 60 5G (?Cosmic Black, 128 GB)  (8 GB RAM)', 'realme Narzo
+50i Prime (Dark Blue, 32 GB)  (3 GB RAM)', 'realme 11x 5G (Midnight Black, 128
+GB)  (6 GB RAM)']
+['₹7,876', '₹15,999', '₹11,999', '₹9,499', '₹12,878', '₹11,999', '₹15,584',
+'₹7,148', '₹14,999']
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{t1}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{115}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{p1}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{64}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{url3}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/633}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/666}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/683}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/650}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/678}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/529}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/646}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+     \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{https://buy.realme.com/in/goods/562}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{65}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{}define options and set browser capabilities}
+    \PY{n}{options}\PY{o}{=}\PY{n}{webdriver}\PY{o}{.}\PY{n}{ChromeOptions}\PY{p}{(}\PY{p}{)}
+    \PY{n}{options}\PY{o}{.}\PY{n}{add\PYZus{}argument}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}same\PYZhy{}option}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{}create webdriver instance with options}
+    \PY{n}{driver}\PY{o}{=}\PY{n}{webdriver}\PY{o}{.}\PY{n}{Chrome}\PY{p}{(}\PY{n}{options}\PY{o}{=}\PY{n}{options}\PY{p}{)}
+    \PY{n}{driver}\PY{o}{.}\PY{n}{get}\PY{p}{(}\PY{n}{url3}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+    \PY{n}{name2} \PY{o}{=} \PY{n}{driver}\PY{o}{.}\PY{n}{find\PYZus{}element}\PY{p}{(}\PY{n}{By}\PY{o}{.}\PY{n}{XPATH}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.//h1[@class=}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{goods\PYZhy{}title}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{c+c1}{\PYZsh{}\PYZlt{}span class=\PYZdq{}B\PYZus{}NuCI\PYZdq{}\PYZgt{}realme Narzo N53 (Feather Gold, 64 GB)\PYZam{}nbsp;\PYZam{}nbsp;(4 GB RAM)\PYZlt{}/span\PYZgt{}}
+    \PY{n}{name1} \PY{o}{=} \PY{n}{name2}\PY{o}{.}\PY{n}{text}
+    \PY{n}{t1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{name1}\PY{p}{)}
+    \PY{n}{price2} \PY{o}{=} \PY{n}{driver}\PY{o}{.}\PY{n}{find\PYZus{}element}\PY{p}{(}\PY{n}{By}\PY{o}{.}\PY{n}{XPATH}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.//div[@class=}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{price}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{price1} \PY{o}{=} \PY{n}{price2}\PY{o}{.}\PY{n}{text}
+    \PY{n}{p1}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{price1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{70}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{t1}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{p1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+['realme narzo N53', 'realme 11 5G', 'realme C67 5G', 'realme C53', 'realme
+narzo 60x 5G', 'realme narzo 50A Prime', 'realme narzo 60 5G', 'realme narzo 50i
+Prime']
+['₹7,999', '₹15,999', '₹13,999', '₹9,499', '₹11,499', '₹11,499', '₹14,999',
+'₹7,999']
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{78}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{x}\PY{o}{=}\PY{n}{t}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{8}\PY{p}{]}
+\PY{n}{y}\PY{o}{=}\PY{n}{p}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{8}\PY{p}{]}
+\PY{n}{z}\PY{o}{=}\PY{n}{p1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{8}\PY{p}{]}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{n}{df}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{phones\PYZus{}titles}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{x}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{prices\PYZus{}flipkart}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{y}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{prices\PYZus{}realme\PYZus{}store}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{n}{z}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{78}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                                       phones\_titles prices\_flipkart  \textbackslash{}
+0  realme Narzo N53 (Feather Gold, 64 GB)  (4 GB {\ldots}          ₹7,876
+1      realme 11 5G (Glory Gold, 128 GB)  (8 GB RAM)         ₹15,999
+2    realme C67 5G (Sunny Oasis, 128 GB)  (4 GB RAM)         ₹11,999
+3     realme C53 (Champion Gold, 128 GB)  (6 GB RAM)          ₹9,499
+4  realme Narzo 60X 5G (Nebula Purple, 128 GB)  ({\ldots}         ₹12,878
+5  realme Narzo N55 (Prime Black, 128 GB)  (6 GB {\ldots}         ₹11,999
+6  realme Narzo 60 5G (?Cosmic Black, 128 GB)  (8{\ldots}         ₹15,584
+7  realme Narzo 50i Prime (Dark Blue, 32 GB)  (3 {\ldots}          ₹7,148
+
+  prices\_realme\_store
+0              ₹7,999
+1             ₹15,999
+2             ₹13,999
+3              ₹9,499
+4             ₹11,499
+5             ₹11,499
+6             ₹14,999
+7              ₹7,999
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{98}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Create a dictionary to map product names to their prices}
+\PY{n}{price\PYZus{}dict} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{n+nb}{zip}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{p}\PY{p}{,} \PY{n}{p1}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} Get user input for product name}
+\PY{n}{user\PYZus{}input} \PY{o}{=} \PY{n+nb}{input}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Enter the product name: }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} Check if the user input matches any product name}
+\PY{k}{if} \PY{n}{user\PYZus{}input} \PY{o+ow}{in} \PY{n}{price\PYZus{}dict}\PY{p}{:}
+    \PY{n}{price\PYZus{}p1}\PY{p}{,} \PY{n}{price\PYZus{}p2} \PY{o}{=} \PY{n}{price\PYZus{}dict}\PY{p}{[}\PY{n}{user\PYZus{}input}\PY{p}{]}
+    \PY{c+c1}{\PYZsh{} Remove currency symbol and commas, convert to integers}
+    \PY{n}{price\PYZus{}p1} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{price\PYZus{}p1}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{₹}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+    \PY{n}{price\PYZus{}p2} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{price\PYZus{}p2}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{₹}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{} Compare prices and print the result}
+    \PY{k}{if} \PY{n}{price\PYZus{}p1} \PY{o}{\PYZlt{}} \PY{n}{price\PYZus{}p2}\PY{p}{:}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{user\PYZus{}input}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ is cheaper on flipkart.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{k}{elif} \PY{n}{price\PYZus{}p2} \PY{o}{\PYZlt{}} \PY{n}{price\PYZus{}p1}\PY{p}{:}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{user\PYZus{}input}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ is cheaper on realme store.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{The prices on both websites are the same for }\PY{l+s+si}{\PYZob{}}\PY{n}{user\PYZus{}input}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{k}{else}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No product found with the name }\PY{l+s+s2}{\PYZsq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{user\PYZus{}input}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Enter the product name: realme Narzo N55 (Prime Black, 128 GB)  (6 GB RAM)
+realme Narzo N55 (Prime Black, 128 GB)  (6 GB RAM) is cheaper on realme store.
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{86}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{89}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{52}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
